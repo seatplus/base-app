@@ -1,0 +1,6 @@
+/_volumes/
+/src/
+/packages/
+/.idea/
+
+.env

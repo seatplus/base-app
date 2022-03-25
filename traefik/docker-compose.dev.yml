@@ -1,0 +1,8 @@
+services:
+  traefik:
+    restart: unless-stopped
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedByDefault=false"
+      - "--api.insecure=true"
+      - "--log.level=DEBUG"

@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+
+# Switch to web user
+su webuser
+
+#Bring up horizon
+php /var/www/html/artisan horizon

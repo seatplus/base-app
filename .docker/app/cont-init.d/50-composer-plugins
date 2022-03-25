@@ -1,0 +1,32 @@
+#!/usr/bin/with-contenv bash
+
+# Exit on error
+set -e
+
+# Plugin support. The docker-compose.yml has the option
+# for setting SEATPLUS_PLUGINS environment variable. Read
+# that here and split by commas.
+PLUGINS=$(echo -n "${SEATPLUS_PLUGINS:-none}" | sed 's/,/ /g')
+
+# If we have any plugins to process, do that.
+if [ ! "${PLUGINS}"  == "none" ]; then
+
+    CURRENT_WORKING_DIR= pwd
+    WEBUSER_HOME=${WEBUSER_HOME:-"/var/www/html"}
+
+    echo "📋 Installing and updating plugins: ${SEATPLUS_PLUGINS}"
+
+    cd "$WEBUSER_HOME"
+
+    # Why are we doing it like this?
+    #   ref: https://github.com/composer/composer/issues/1874
+
+    # Require the plugins from the environment variable.
+    composer require "${PLUGINS}" --update-no-dev
+
+    chown -R webuser:webgroup "$WEBUSER_HOME"
+
+    cd "$CURRENT_WORKING_DIR"
+fi
+
+echo "Completed plugins processing"

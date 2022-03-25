@@ -1,0 +1,36 @@
+#!/usr/bin/with-contenv bash
+
+# Exit on error
+set -e
+
+# Wait for the database
+# Commented out as it is not working
+#while ! mysqladmin ping --host=${DB_HOST} --user=${DB_USER} --password=${DB_PASSWORD} --silent; do
+#
+#    echo "⌛ MariaDB container might not be ready yet... sleeping..."
+#    sleep 10
+#done
+
+# Check if seatplus is installed
+echo "🕵️‍♂️ Check Installation"
+
+FILE=/var/www/html/composer.json
+if [ ! -f "$FILE" ]; then
+
+    WEBUSER_HOME=${WEBUSER_HOME:-"/var/www/html"}
+
+    echo "💼 Project missing. Installing it"
+
+    # Create the project
+    composer create-project seatplus/core /var/www/html --prefer-dist --no-dev --no-ansi
+
+    # Publish the web assets
+    php artisan vendor:publish --tag=web --force
+    # Publish the I18n assets
+    php artisan vendor:publish --provider="Pine\I18n\I18nServiceProvider"
+
+    chown -R webuser:webgroup $WEBUSER_HOME
+
+else
+  echo "✅ Project seems to be set up"
+fi

@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  mariadb:
+    image: mariadb:10.7
+    restart: always
+    volumes:
+      - ./_volumes/mysql/database_data/:/var/lib/mysql
+    environment:
+      MARIADB_DATABASE: ${DB_DATABASE}
+      MARIADB_USER: ${DB_USER}
+      MARIADB_PASSWORD: ${DB_PASSWORD}
+      MARIADB_RANDOM_ROOT_PASSWORD: 'yes'
+    networks:
+      - backend
+  php:
+    build:
+      context: .docker/app
+    restart: always
+    networks:
+      - traefik
+      - backend
+    volumes:
+      - ./src:/var/www/html:cached
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
+      - redis
+  redis:
+    image: redis:5-alpine
+    restart: always
+    volumes:
+      - ./_volumes/redis/data:/data
+    command: "redis-server --appendonly yes --save 60 1"
+    networks:
+      - backend
+  node:
+    image: node:current-alpine
+    restart: on-failure
+    volumes:
+      - ./src:/var/www/html:cached
+    working_dir: /var/www/html
+    depends_on:
+      - php
+
+networks:
+  traefik:
+    external: true
+  backend:
+    driver: bridge
+
