@@ -6,7 +6,4 @@ RUN mkdir -p /usr/src/php/ext/redis \
     && curl -L https://github.com/phpredis/phpredis/archive/$PHPREDIS_VERSION.tar.gz | tar xvz -C /usr/src/php/ext/redis --strip 1 \
     && echo 'redis' >> /usr/src/php-available-exts
 
-
-COPY cont-init.d /etc/cont-init.d
-COPY services.d /etc/services.d/
 COPY ./y-override-php-defaults.conf /etc/php/8.1/fpm/pool.d/

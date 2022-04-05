@@ -26,6 +26,36 @@ services:
     depends_on:
       - mariadb
       - redis
+  cron:
+    build:
+      context: .docker/app
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - ./src:/var/www/html:cached
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
+      - redis
+      - php
+    command: ["su", "webuser", "-c", "php artisan schedule:work"]
+  worker:
+    build:
+      context: .docker/app
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - ./src:/var/www/html:cached
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
+      - redis
+      - php
+    command: ["su", "webuser", "-c", "php artisan horizon"]
   redis:
     image: redis:5-alpine
     restart: always
@@ -42,7 +72,6 @@ services:
     working_dir: /var/www/html
     depends_on:
       - php
-
 networks:
   traefik:
     external: true

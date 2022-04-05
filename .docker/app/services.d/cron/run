@@ -1,8 +1,0 @@
-#!/usr/bin/with-contenv bash
-
-# Switch to web user
-su webuser
-
-cd /var/www/html
-#Bring up the worker
-php /var/www/html/artisan schedule:work
