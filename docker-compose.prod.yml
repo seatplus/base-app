@@ -4,7 +4,7 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
       - "traefik.http.routers.seatplus_route.rule=Host(`${APP_URL}`)"
-      - "traefik.http.routers.seatplus_route.service=${COMPOSE_PROJECT_NAME}_service"
-      - "traefik.http.services.${COMPOSE_PROJECT_NAME}_service.loadbalancer.server.port=80"
+      - "traefik.http.routers.seatplus_route.entrypoints=websecure"
+      - "traefik.http.routers.seatplus_route.tls.certresolver=myresolver"
   node:
     command: ["/bin/sh", "-c", "npm install && npm run prod"]
