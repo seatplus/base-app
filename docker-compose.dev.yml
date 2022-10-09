@@ -13,10 +13,21 @@ services:
       - "traefik.http.routers.seatplus_route.rule=Host(`${COMPOSE_PROJECT_NAME}.test`)"
       - "traefik.http.routers.seatplus_route.service=${COMPOSE_PROJECT_NAME}_service"
       - "traefik.http.services.${COMPOSE_PROJECT_NAME}_service.loadbalancer.server.port=80"
+  cron:
+    volumes:
+      - ./packages:/var/www/packages:cached
+  worker:
+    volumes:
+      - ./packages:/var/www/packages:cached
   mariadb:
     ports:
       - target: 3306
         published: 3306
+        mode: host
+  redis:
+    ports:
+      - target: 6379
+        published: 6379
         mode: host
   testdb:
     image: mariadb:10.7
@@ -25,14 +36,16 @@ services:
     ports:
       - "3308:3306"
     environment:
-      - MYSQL_DATABASE=testbench
-      - MYSQL_USER=default
-      - MYSQL_PASSWORD=secret
-      - MYSQL_ROOT_PASSWORD=root
+      MARIADB_DATABASE: testbench
+      MARIADB_USER: default
+      MARIADB_PASSWORD: secret
+      MARIADB_RANDOM_ROOT_PASSWORD: 'yes'
     networks:
       - backend
   node:
     user: "${PUID}:${PGID}"
     volumes:
       - ./packages:/var/www/packages:cached
-    command: ["/bin/sh", "-c", "npm install && npm run watch"]
+    ports:
+      - "5173:5173"
+    command: ["/bin/sh", "-c", "npm install && npm run dev --host"]

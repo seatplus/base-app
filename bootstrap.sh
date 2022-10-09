@@ -16,9 +16,18 @@ echo "Setup SeAT plus"
 # change the DB_PASSWORD
 sed -i -- 's/DB_PASSWORD=i_should_be_changed/DB_PASSWORD='$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c22 ; echo '')'/g' .env
 
-read -p "Please enter your applications URL where your SeAT plus instance can be found from the Internet: " URL
-URL=${URL:-http://seatplus.test}
+URL = ''
+
+while [[ $(echo $URL | grep -c "https://") -eq 0  &&  $(echo $URL | grep -c "http://") -eq 0 ]]; do
+    read -p "Please enter your applications URL (including http or https protocol) where your SeAT plus instance can be found from the Internet: " SUBMITTED_URL
+        URL=${SUBMITTED_URL:-http://seatplus.test}
+done
+
 sed -i -- 's,APP_URL=url,APP_URL='"${URL}"',g' .env
+
+# setup Host in docker-compose.prod.yml
+URL_WITHOUT_PROTOCOL=${URL#*//}
+sed 's/traefik.http.routers.seatplus_route.rule=.*/traefik.http.routers.seatplus_route.rule=Host(`'"$URL_WITHOUT_PROTOCOL"'`)"/g' -i docker-compose.prod.yml
 
 echo    # (optional) move to a new line
 echo "Setup EVE Online Application"
