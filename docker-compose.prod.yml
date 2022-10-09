@@ -3,7 +3,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik"
-      - "traefik.http.routers.seatplus_route.rule=Host(`${APP_URL}`)"
+      - "traefik.http.routers.seatplus_route.rule=Host(`seatplus.net`)"
       - "traefik.http.routers.seatplus_route.entrypoints=websecure"
       - "traefik.http.routers.seatplus_route.tls.certresolver=myresolver"
   node:
