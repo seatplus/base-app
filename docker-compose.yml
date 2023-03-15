@@ -21,6 +21,8 @@ services:
       - backend
     volumes:
       - ./src:/var/www/html:cached
+    environment:
+      SSL_MODE: 'off'
     env_file:
       - .env
     depends_on:
