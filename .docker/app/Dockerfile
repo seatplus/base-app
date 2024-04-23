@@ -1,4 +1,4 @@
-FROM serversideup/php:8.1-fpm-nginx
+FROM serversideup/php:8.1-fpm-nginx-v2.2.1
 
 # Install PHP Redis
 ENV PHPREDIS_VERSION 5.3.4
